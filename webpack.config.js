@@ -16,7 +16,7 @@ module.exports = {
   mode: isProd ? "production" : "development",
 
   entry: {
-    main: "./src/core/remotes.ts",
+    main: "./src/main.js",
   },
 
   output: {
@@ -73,8 +73,7 @@ module.exports = {
       filename: "remoteEntry.js",
       shared: sharedDependencies,
       exposes: {
-        "./communicator": "./src/utilities/communicator",
-        "./renderVueComponent": "./src/utilities/render",
+        "./calc": "./src/utilities/calculator",
       },
     }),
     new HtmlWebpackPlugin({

@@ -9,19 +9,5 @@
   <body>
     <div id="app">Demo page</div>
     <script src="http://localhost:<%= port %>/main.js"></script>
-    <script>
-      (async () => {
-        window.__module_federation__.registerRemote(
-          "http://localhost:<%= port %>/remoteEntry.js",
-          "<%= moduleScope %>"
-        );
-
-        const { default: render } =
-          await window.__module_federation__.lazyImport(
-            "<%= moduleScope %>/renderVueComponent"
-          );
-        console.log(render);
-      })();
-    </script>
   </body>
 </html>
