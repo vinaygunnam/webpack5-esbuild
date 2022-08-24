@@ -1,6 +1,9 @@
 import Vue from "vue";
 
-export function render(ComponentDefinition, props, mountNode) {
+export default function render(ComponentDefinition, props, mountNode) {
   const Component = Vue.extend(ComponentDefinition);
-  new Component().$mount(mountNode);
+
+  if (mountNode) {
+    new Component({ propsData: props }).$mount(mountNode);
+  }
 }

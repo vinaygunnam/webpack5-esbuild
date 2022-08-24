@@ -1,16 +1,12 @@
 const path = require("path");
 const { ESBuildMinifyPlugin } = require("esbuild-loader");
-const { VueLoaderPlugin } = require("vue-loader");
 const {
   container: { ModuleFederationPlugin },
 } = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { name, port } = require("./configuration.json");
 
-const manifest = require("./package.json");
-const sharedDependencies = Object.keys(manifest.dependencies).map((d) => ({
-  [d]: d,
-}));
+const { dependencies: sharedDependencies } = require("./package.json");
 
 const isProd = process.env.NODE_ENV === "production";
 const whenNotProd = (x) => (isProd ? undefined : x);
@@ -20,7 +16,7 @@ module.exports = {
   mode: isProd ? "production" : "development",
 
   entry: {
-    main: "./src/main.js",
+    main: "./src/core/remotes.ts",
   },
 
   output: {
@@ -33,7 +29,7 @@ module.exports = {
 
   devServer: whenNotProd({
     compress: true,
-    port,
+    port: process.env.PORT || port,
     host: "0.0.0.0",
     allowedHosts: "all",
     hot: true,
@@ -44,43 +40,21 @@ module.exports = {
         "X-Requested-With, content-type, Authorization",
     },
   }),
-
+  resolve: {
+    alias: {
+      vue$: isProd ? "vue/dist/vue.min.js" : "vue/dist/vue.js",
+    },
+  },
   module: {
     rules: [
       // Use esbuild as a Babel alternative
       {
-        test: /\.js$/,
+        test: /\.[jt]s$/,
         loader: "esbuild-loader",
         options: {
+          loader: "ts",
           target: "es2015",
         },
-      },
-      {
-        test: /\.vue$/,
-        loader: "vue-loader",
-      },
-      {
-        test: /\.s?css$/i,
-        use: [
-          "style-loader",
-          {
-            loader: "css-loader",
-            options: {
-              modules: {
-                auto: true,
-                localIdentName: "[local]_[hash:base64:5]",
-              },
-            },
-          },
-          "sass-loader",
-          {
-            loader: "esbuild-loader",
-            options: {
-              loader: "css",
-              minify: true,
-            },
-          },
-        ],
       },
     ],
   },
@@ -94,18 +68,13 @@ module.exports = {
     ],
   },
   plugins: [
-    new VueLoaderPlugin(),
     new ModuleFederationPlugin({
       name,
       filename: "remoteEntry.js",
-      library: {
-        type: "var",
-        name,
-      },
-      // shared: sharedDependencies,
+      shared: sharedDependencies,
       exposes: {
-        "./Example": "./src/components/Example.vue",
-        "./render": "./src/utilities/render",
+        "./communicator": "./src/utilities/communicator",
+        "./renderVueComponent": "./src/utilities/render",
       },
     }),
     new HtmlWebpackPlugin({
@@ -113,6 +82,7 @@ module.exports = {
       template: "public/index.html",
       templateParameters: {
         moduleScope: name,
+        port,
       },
       inject: false,
     }),
