@@ -8,9 +8,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { name, port } = require("./configuration.json");
 
 const manifest = require("./package.json");
-const sharedDependencies = Object.keys(manifest.dependencies).map((d) => ({
-  [d]: d,
-}));
+const sharedDependencies = manifest.dependencies;
 
 const isProd = process.env.NODE_ENV === "production";
 const whenNotProd = (x) => (isProd ? undefined : x);
@@ -98,14 +96,9 @@ module.exports = {
     new ModuleFederationPlugin({
       name,
       filename: "remoteEntry.js",
-      library: {
-        type: "var",
-        name,
-      },
-      // shared: sharedDependencies,
+      shared: sharedDependencies,
       exposes: {
         "./Example": "./src/components/Example.vue",
-        "./render": "./src/utilities/render",
       },
     }),
     new HtmlWebpackPlugin({
@@ -113,6 +106,7 @@ module.exports = {
       template: "public/index.html",
       templateParameters: {
         moduleScope: name,
+        port,
       },
       inject: false,
     }),

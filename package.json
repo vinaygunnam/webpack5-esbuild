@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack",
-    "serve": "webpack serve"
+    "serve": "webpack serve",
+    "serve:static": "node static-serve.js"
   },
   "devDependencies": {
     "css-loader": "^6.7.1",
@@ -15,6 +16,7 @@
     "node-sass": "^7.0.1",
     "prettier": "2.7.1",
     "sass-loader": "^13.0.2",
+    "static-server": "^2.2.1",
     "style-loader": "^3.3.1",
     "vue-loader": "^15.0.0",
     "vue-template-compiler": "^2.7.8",
