@@ -4,9 +4,9 @@ const {
   container: { ModuleFederationPlugin },
 } = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { name, port } = require("./configuration.json");
+const { name, port, resources } = require("./configuration.json");
 
-const { dependencies: sharedDependencies } = require("./package.json");
+const { dependencies: sharedDependencies, version } = require("./package.json");
 
 const isProd = process.env.NODE_ENV === "production";
 const whenNotProd = (x) => (isProd ? undefined : x);
@@ -72,10 +72,7 @@ module.exports = {
       name,
       filename: "remoteEntry.js",
       shared: sharedDependencies,
-      exposes: {
-        "./communicator": "./src/utilities/communicator",
-        "./renderVueComponent": "./src/utilities/render",
-      },
+      exposes: resources,
     }),
     new HtmlWebpackPlugin({
       title: "Demo",
@@ -83,6 +80,22 @@ module.exports = {
       templateParameters: {
         moduleScope: name,
         port,
+      },
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      template: "templates/text.txt",
+      filename: "version.txt",
+      templateParameters: {
+        text: version,
+      },
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      template: "templates/text.txt",
+      filename: "metadata.json",
+      templateParameters: {
+        text: JSON.stringify({ name, resources: Object.keys(resources) }),
       },
       inject: false,
     }),

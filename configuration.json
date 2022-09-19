@@ -1,4 +1,8 @@
 {
   "port": 3000,
-  "name": "core"
+  "name": "core",
+  "resources": {
+    "./communicator": "./src/utilities/communicator",
+    "./renderVueComponent": "./src/utilities/render"
+  }
 }

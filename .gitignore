@@ -1,3 +1,14 @@
+# system
 .DS_Store
+
+# node modules
 node_modules
+
+# output
 dist
+
+# lock files
+# IMPORTANT: Remove these entries to ALWAYS commit lock files into real repositories since they ensure build integrity and consistency
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
